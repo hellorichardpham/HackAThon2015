@@ -1,8 +1,11 @@
 import java.io.*;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.Scanner;
 
 public class Sparse{
      public static void main(String[] args)throws IOException {
+    	 Date today = new Date();
          Scanner in = null;
          String tripsLine = null;
          String routesLine = null;
@@ -10,9 +13,9 @@ public class Sparse{
          String[] tripsTokens = null;
          String[] routesTokens = null;
          String[] stopTimesTokens = null;
+         ArrayList<String> stopTunes = new ArrayList<String>();
 
-
-
+         
          BufferedReader tripsReader = new BufferedReader(new FileReader("trips.txt"));
          BufferedReader routesReader = new BufferedReader(new FileReader("routes.txt"));
          BufferedReader stopTimesReader = new BufferedReader(new FileReader("stop_times.txt"));
@@ -27,6 +30,8 @@ public class Sparse{
          String tripID = tripsTokens[2];
          System.out.println(routeID + " " + tripID);
          
+         stopTimesLine = stopTimesReader.readLine();
+         stopTimesTokens = stopTimesLine.split(",");
          
          
          //find routeID within routes.txt using data from trips.txt
