@@ -4,20 +4,22 @@ import java.util.Scanner;
 public class Sparse{
      public static void main(String[] args)throws IOException {
          Scanner in = null;
-         String line = null;
+         String tripsLine = null;
          String[] tokens = null;
 
-         in = new Scanner(new File(args[0]));
+         BufferedReader tripsReader = new BufferedReader(new FileReader("trips.txt"));
+         BufferedReader stopsReader = new BufferedReader(new FileReader("stops.txt"));
          //read the first line in the file, which specifies the
          //inputted matrix's description(dimension,NNZ)
 		 
-         line = in.nextLine();
+         tripsLine = tripsReader.readLine();
          
          //Split by Commas because CSV file
-         tokens = line.split(",");
-         for(int i =0; i < tokens.length; i++)
-         System.out.println(tokens[i]);
-
+         tokens = tripsLine.split(",");
+         String routeID = tokens[0];
+         String tripID = tokens[2];
+         
+         
          /*
          int lineNum = 0;//counter to keep track of the line number
          while(in.hasNext()){
