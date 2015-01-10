@@ -1,0 +1,21 @@
+//route_short_name is the bus number that we want (16, 20, 10)
+
+route_id,route_short_name,route_long_name,route_desc,route_type,route_url
+
+
+10-100,10,"UCSC Via High",,3,http://scmtd.com/routes/schedules/systemschedule/10
+10-102,10,"UCSC Via High",,3,http://scmtd.com/routes/schedules/systemschedule/10
+12-100,12,"UCSC / East Side Direct",,3,http://scmtd.com/routes/schedules/systemschedule/12
+12-102,12,"UCSC / East Side Direct",,3,http://scmtd.com/routes/schedules/systemschedule/12
+15-100,15,"UCSC via Laurel West",,3,http://scmtd.com/routes/schedules/systemschedule/15
+15-102,15,"UCSC via Laurel West",,3,http://scmtd.com/routes/schedules/systemschedule/15
+16-100,16,"UCSC via Laurel East",,3,http://scmtd.com/routes/schedules/systemschedule/16
+16-102,16,"UCSC via Laurel East",,3,http://scmtd.com/routes/schedules/systemschedule/16
+17-100,17,"Amtrak Highway 17 Express",,3,http://scmtd.com/routes/schedules/systemschedule/17
+17-102,17,"Amtrak Highway 17 Express",,3,http://scmtd.com/routes/schedules/systemschedule/17
+19-100,19,"UCSC via Lower Bay",,3,http://scmtd.com/routes/schedules/systemschedule/19
+19-102,19,"UCSC via Lower Bay",,3,http://scmtd.com/routes/schedules/systemschedule/19
+20-100,20,"UCSC via Westside",,3,http://scmtd.com/routes/schedules/systemschedule/20
+20-102,20,"UCSC via Westside",,3,http://scmtd.com/routes/schedules/systemschedule/20
+20D-100,20D,"UCSC via Delaware",,3,http://scmtd.com/routes/schedules/systemschedule/20D
+20D-102,20D,"UCSC via Delaware",,3,http://scmtd.com/routes/schedules/systemschedule/20D

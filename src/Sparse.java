@@ -5,19 +5,38 @@ public class Sparse{
      public static void main(String[] args)throws IOException {
          Scanner in = null;
          String tripsLine = null;
-         String[] tokens = null;
+         String routesLine = null;
+         String stopTimesLine = null;
+         String[] tripsTokens = null;
+         String[] routesTokens = null;
+         String[] stopTimesTokens = null;
+
+
 
          BufferedReader tripsReader = new BufferedReader(new FileReader("trips.txt"));
-         BufferedReader stopsReader = new BufferedReader(new FileReader("stops.txt"));
+         BufferedReader routesReader = new BufferedReader(new FileReader("routes.txt"));
+         BufferedReader stopTimesReader = new BufferedReader(new FileReader("stop_times.txt"));
          //read the first line in the file, which specifies the
          //inputted matrix's description(dimension,NNZ)
 		 
          tripsLine = tripsReader.readLine();
          
-         //Split by Commas because CSV file
-         tokens = tripsLine.split(",");
-         String routeID = tokens[0];
-         String tripID = tokens[2];
+         //Retrieve routeID and tripID attributes from trips.txt
+         tripsTokens = tripsLine.split(",");
+         String routeID = tripsTokens[0];
+         String tripID = tripsTokens[2];
+         System.out.println(routeID + " " + tripID);
+         
+         
+         
+         //find routeID within routes.txt using data from trips.txt
+         routesLine = routesReader.readLine();
+         routesTokens = routesLine.split(",");
+         while( !routeID.equals(routesTokens[0]) ) {
+        	 routesLine = routesReader.readLine();
+        	 routesTokens = routesLine.split(",");
+         }
+         System.out.println(routesTokens[0]);
          
          
          /*
