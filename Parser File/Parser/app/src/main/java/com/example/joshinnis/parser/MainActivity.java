@@ -225,13 +225,15 @@ public class MainActivity extends ActionBarActivity {
             }
         }
 		
+        //0 Weekday trips.get(0).values()
+        //1 Saturday
+        //2 Sunday
 		Collection<trip> col = route_hash.get("10").trips.get(1).values();
         Iterator<trip> tri = col.iterator();
-        trip printtrip = tri.next();
         while(tri.hasNext()) {
+            printtrip = tri.next();
             for (int i = 0; i < printtrip.time.length; ++i)
                 log.v("MainActivity", i + ": " + printtrip.time[i]);
-            printtrip = tri.next();
         }
 
 
