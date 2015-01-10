@@ -224,7 +224,15 @@ public class MainActivity extends ActionBarActivity {
                 route_hash.get(route_num[0]).trips.get(stop_time_tmp_hash.get(line[2]).day).put(line[2],newtrip);
             }
         }
-
+		
+		Collection<trip> col = route_hash.get("10").trips.get(1).values();
+        Iterator<trip> tri = col.iterator();
+        trip printtrip = tri.next();
+        while(tri.hasNext()) {
+            for (int i = 0; i < printtrip.time.length; ++i)
+                log.v("MainActivity", i + ": " + printtrip.time[i]);
+            printtrip = tri.next();
+        }
 
 
 
