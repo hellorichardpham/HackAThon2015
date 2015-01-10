@@ -1,5 +1,6 @@
 //generateTime is a method to give us the current time of day using the Joda library
 import java.util.ArrayList;
+import java.util.Scanner;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeComparator;
@@ -10,43 +11,70 @@ import org.joda.time.format.DateTimeFormatter;
 public class DateTest {
 
 	public static void main(String[] args) {
-		generateTime();
+		Scanner scan = new Scanner(System.in);
+		ArrayList<String> timeInputs = new ArrayList<String>();
+		ArrayList<DateTime> dateTimeInputs = new ArrayList<DateTime>(); 
+		
+		//Get user input for test times as Strings
+		for(int i =0; i < 4; i++) {
+			timeInputs.add(scan.next());
+		}
+		
+		//Turn strings into DateTime Objects.
+		dateTimeInputs = generateTime(timeInputs);
+		
+		System.out.println(findNextBusTime(dateTimeInputs) + " wow");
 	}
 
 	// Change this to return a date
-	public static void generateTime() {
-		DateTime currentTime = new DateTime();
-		String fakeInput = "20:48:00";
-		ArrayList<String> timeInputs = new ArrayList<String>();
+	//Fills dateTimeInputs with test times that we will compare with current time.
+	public static ArrayList<DateTime> generateTime(ArrayList<String> timeInputs) {
 		ArrayList<DateTime> dateTimeInputs = new ArrayList<DateTime>();
-		
-		// Format the time so there are two digits for Hour/Minute/Seconds to
-		// meet metro pattern
+		DateTime fakeTime;
+		for(int i =0; i < 4; i++) {
+			dateTimeInputs.add(fakeTime = DateTime.parse(timeInputs.get(i),
+					DateTimeFormat.forPattern("HH:mm:ss")));
+		}
+		return dateTimeInputs;
+	}
+	
+	public static String findNextBusTime(ArrayList<DateTime> dateTimeInputs) {
 		DateTimeFormatter fmt = DateTimeFormat.forPattern("HH:mm:ss");
-		DateTime fakeTime = DateTime.parse(fakeInput,
-				DateTimeFormat.forPattern("HH:mm:ss"));
-
-		System.out.println("Current Time: " + fmt.print(currentTime));
-		System.out.println("Fake Time: " + fmt.print(fakeTime));
-		isDuringOrAfter(currentTime, fakeTime);
-		// System.out.println("Fake Time Before Current Time? " +
-		// fakeTime.isBefore(currentTime));
+		DateTime currentTime = new DateTime();
+		
+		for(int i =0; i < dateTimeInputs.size(); i++) {
+			if(isDuringOrAfter(currentTime, dateTimeInputs.get(i))) {
+				return fmt.print(dateTimeInputs.get(i));
+			}
+		}
+		
+		return "Error: Bus Not Found";
 	}
 
 	public static boolean isDuringOrAfter(DateTime currentTime,
 			DateTime targetTime) {
-		// result == 1 currentTime is after targetTime. result == 0 current ==
-		// target result == -1, current is before target
+		
+		DateTimeFormatter fmt = DateTimeFormat.forPattern("HH:mm:ss");
+		
+		System.out.println("curr: " + fmt.print(currentTime));
+		System.out.println("target: " + fmt.print(targetTime));
+
 		int result = DateTimeComparator.getTimeOnlyInstance().compare(
-				currentTime, targetTime);
+				targetTime,currentTime);
+
 		switch (result) {
 		case 0:
-		case 1:
-			System.out.println("Current time is after or equal to target time.");
+			System.out.println("Current time is equal to target time. " + fmt.print(targetTime));
 			return true;
-		default:
-			System.out.println("Current time is less than target.");
+		case 1:
+			System.out.println("Current time is after or equal to target time. " + fmt.print(targetTime));
+			return true;
+		case -1:
+			System.out.println("returning false for " + fmt.print(targetTime));
 			return false;
+			default:
+				System.out.println("wow");
+				return false;
 		}
 
 	}
