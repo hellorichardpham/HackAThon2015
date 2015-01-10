@@ -55,7 +55,7 @@ public class MainActivity extends ActionBarActivity {
 
         //0 = Weekday, 1 = Saturday, 2 = Sunday
         //Needed for inserting data in the structure, don't use
-        boolean[] day = new boolean[3];
+        //boolean[] day = new boolean[3];
 
         /*This is where the trip class gets stored, the arrayList is used to store each type of route
         0 = Weekday, 1 = Saturday, 2 = Sunday. The data is stored in the hash table using the trip_id
@@ -67,10 +67,11 @@ public class MainActivity extends ActionBarActivity {
             for(int i = 0; i < 3; i++) {
                 Map<String, trip> t = new HashMap<String, trip>();
                 trips.add(i,t);
-                day[i] = false;
+               // day[i] = false;
             }
         }
     }
+    
     Map<String,route> route_hash = new HashMap<String,route>();
 
 
@@ -81,6 +82,7 @@ public class MainActivity extends ActionBarActivity {
         int index;
         int day;
     }
+    
     Map<String,tmp_stop_time> stop_time_tmp_hash = new HashMap<String,tmp_stop_time>();
 
 
@@ -110,7 +112,7 @@ public class MainActivity extends ActionBarActivity {
             newStop.lat = Float.parseFloat(line[4]);
             newStop.lon = Float.parseFloat(line[5]);
             newStop.name = line[1];
-            bus_stop_hash.put(line[0],newStop);
+            bus_stop_hash.put(line[0],newStop);//lin[] refers to stop ID   
         }
 
         /*Gets the data needed from stop_times and stores it in a temporary hashtable to be used
