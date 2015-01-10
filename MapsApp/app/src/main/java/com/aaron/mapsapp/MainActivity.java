@@ -1,23 +1,34 @@
 package com.aaron.mapsapp;
 
 import java.lang.String;
-import android.location.Location;
+
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesClient;
+import com.google.android.gms.common.api.Api;
 import android.os.Bundle;
+import android.location.*;
 import android.support.v4.app.FragmentActivity;
 
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.*;
 import com.google.android.gms.maps.model.*;
-//import com.google.android.gms.maps.MapFragment;
+
 import com.google.android.gms.common.api.GoogleApiClient;
+import android.util.Log;
+//import org.apache.commons.logging.Log;
 
-public class MainActivity extends FragmentActivity implements OnMapReadyCallback {
 
-    GoogleApiClient client;
+public class MainActivity extends FragmentActivity implements OnMapReadyCallback,
+        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener
+{
+
+    GoogleApiClient mGoogleApiClient;
+    GoogleMap map0;
     Location userLocation;
     double mLatitudeText;
     double mLongitudeText;
 
+    Log log;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,36 +39,75 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-        client = new GoogleApiClient.Builder(this)
+        map0 = mapFragment.getMap();
+
+         mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addApi(LocationServices.API)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
-                .addApi(LocationServices.API)
                 .build();
-        client.connect();
+
+        //mGoogleApiClient.connect();
 
     }
 
 
     @Override
-    public void onMapReady(GoogleMap map) {
-
+    public void onConnected(Bundle connectionHint) {
+        // Connected to Google Play services!
         userLocation = LocationServices.FusedLocationApi.getLastLocation(
-                client);
+                mGoogleApiClient);
         if (userLocation != null) {
+            log.e("MyActivity","Here");
             mLatitudeText = userLocation.getLatitude();
             mLongitudeText = userLocation.getLongitude();
+            changeLocation(userLocation);
         }
+        log.e("MyActivity",Double.toString(mLatitudeText));
+        log.e("MyActivity",Double.toString(userLocation.getLatitude()));
 
-        map.addMarker(new MarkerOptions()
-                .position(new LatLng(mLatitudeText, mLongitudeText))
-                .title("Aaron's House"));
+    }
 
+    @Override
+    public void onConnectionSuspended(int cause) {
+        // The connection has been interrupted.
+        // Disable any UI components that depend on Google APIs
+        // until onConnected() is called.
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult result) {
+        // This callback is important for handling errors that
+        // may occur while attempting to connect with Google.
+        //
+        // More about this in the next section.
+
+    }
+
+    public void placeMarker(GoogleMap map, double latitude, double longitude) {
+      map.addMarker(new MarkerOptions()
+            .position(new LatLng(latitude, longitude))
+            .title("Current Location"));
+    }
+
+    public void moveCamera(GoogleMap map, double latitude, double longitude, int zoomLevel) {
         CameraPosition cameraPosition = new CameraPosition.Builder()
-                .target(new LatLng(mLatitudeText, mLongitudeText))      // Sets the center of the map to Mountain View
-                .zoom(17)                   // Sets the zoom
-                //.bearing(90)                // Sets the orientation of the camera to east
-                //.tilt(30)                   // Sets the tilt of the camera to 30 degrees
+                .target(new LatLng(latitude, longitude))      // Sets the center of the map to Mountain View
+                .zoom(zoomLevel)                   // Sets the zoom
                 .build();                   // Creates a CameraPosition from the builder
         map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+    }
+
+    public void changeLocation (Location userLocation) {
+        double latitude = userLocation.getLatitude();
+        double longitude = userLocation.getLongitude();
+        placeMarker(map0,latitude,longitude);
+        moveCamera(map0,latitude,longitude,17);
+
+    }
+    @Override
+    public void onMapReady(GoogleMap map) {
+        mGoogleApiClient.connect();
+        log.e("MyActivity",Double.toString(mLatitudeText));
     }
 }
