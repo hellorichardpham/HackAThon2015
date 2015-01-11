@@ -155,7 +155,7 @@ public class MapsActivity extends ActionBarActivity implements OnMapReadyCallbac
                 .target(new LatLng(latitude, longitude))      // Sets the center of the map to Mountain View
                 .zoom(zoomLevel)                   // Sets the zoom
                 .build();                   // Creates a CameraPosition from the builder
-        map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+        map.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
     }
 
     public Marker createMarker (GoogleMap map) {
@@ -169,7 +169,7 @@ public class MapsActivity extends ActionBarActivity implements OnMapReadyCallbac
             map.addMarker(new MarkerOptions()
                     .position(new LatLng(lat, lng))
                     .title(name));
-        log.e("Main Activity",name);
+        //log.e("Main Activity",name);
     }
 
     public void createStopMarkerUnique (GoogleMap map, double lat, double lng, String name) {
@@ -177,7 +177,7 @@ public class MapsActivity extends ActionBarActivity implements OnMapReadyCallbac
                 .position(new LatLng(lat, lng))
                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN))
                 .title(name));
-        log.e("Main Activity",name);
+        //log.e("Main Activity",name);
     }
 
     public void updateMarker (Marker marker, double latitude, double longitude) {
@@ -188,19 +188,12 @@ public class MapsActivity extends ActionBarActivity implements OnMapReadyCallbac
     public void changeLocation (Location userLocation) {
         double latitude = userLocation.getLatitude();
         double longitude = userLocation.getLongitude();
-        //updateMarker(userLoc, latitude, longitude);
         moveCamera(map0, latitude, longitude, 14);
     }
 
     @Override
     public void onMapReady(GoogleMap map) {
         mGoogleApiClient.connect();
-        //userLoc = createMarker(map);
-        //Location initLoc = new Location("");
-        //initLoc.setLatitude(initLat);
-        //initLoc.setLongitude(initLng);
-        //changeLocation(initLoc);
-
     }
 
     @Override
@@ -208,8 +201,8 @@ public class MapsActivity extends ActionBarActivity implements OnMapReadyCallbac
         userLocation = location;
         if (userLocation != null) {
             log.e("MyActivity", "LOCATION CHANGED");
-            log.e("MyActivity", Double.toString(userLocation.getLatitude()));
-            log.e("MyActivity", Double.toString(userLocation.getLongitude()));
+           // log.e("MyActivity", Double.toString(userLocation.getLatitude()));
+           // log.e("MyActivity", Double.toString(userLocation.getLongitude()));
             changeLocation(userLocation);
         }
     }
@@ -413,6 +406,8 @@ public class MapsActivity extends ActionBarActivity implements OnMapReadyCallbac
                 route_hash.get(route_num[0]).trips.get(stop_time_tmp_hash.get(line[2]).day).put(line[2], newtrip);
             }
         }
+       // log.e("Parser: ","Here");
+        System.gc();
 
         //0 Weekday trips.get(0).values()
         //1 Saturday
@@ -423,7 +418,7 @@ public class MapsActivity extends ActionBarActivity implements OnMapReadyCallbac
         DateTime tempDateTime = null;
         int busindex = -1;
         Boolean isFound = false;
-       /*itterate through your trip list and find the bus location depending on the current
+       /*iterate through your trip list and find the bus location depending on the current
         time*/
         while (tri.hasNext() && !isFound) {
             trip printtrip = tri.next();
@@ -437,7 +432,7 @@ public class MapsActivity extends ActionBarActivity implements OnMapReadyCallbac
                 tempDateTime = DateTime.parse(time, DateTimeFormat.forPattern("HH:mm:ss"));
                 if (findNextBusTime(tempDateTime)) {
 
-                    log.v("MainActivity", i + "***");
+                   // log.v("MainActivity", i + "***");
                     busindex = i;
                     isFound = true;
                     break;
@@ -458,8 +453,8 @@ public class MapsActivity extends ActionBarActivity implements OnMapReadyCallbac
             yaxis = bus_stop_hash.get( busStopLoc).lon;
             xaxis = bus_stop_hash.get( busStopLoc).lat;
             //Aaron's code goes here.
-            System.out.println("Bus Stop ID: " + busStopLoc);
-            System.out.println("x: " + xaxis + " y: " + yaxis);
+            //System.out.println("Bus Stop ID: " + busStopLoc);
+            //System.out.println("x: " + xaxis + " y: " + yaxis);
             if (busindex == i) {
                 createStopMarkerUnique(map0, xaxis, yaxis, bus_stop_hash.get(uniqueBusStopID).name + "\n Bus is near this stop");
             } else createStopMarker(map0, xaxis, yaxis, bus_stop_hash.get(busStopLoc).name);
@@ -473,8 +468,8 @@ public class MapsActivity extends ActionBarActivity implements OnMapReadyCallbac
         xaxis = bus_stop_hash.get(uniqueBusStopID).lat;
 
 
-        System.out.println("UNIQUE Bus Stop ID: " + uniqueBusStopID);
-        System.out.println("x: " + xaxis + " y: " + yaxis);
+        //System.out.println("UNIQUE Bus Stop ID: " + uniqueBusStopID);
+        //System.out.println("x: " + xaxis + " y: " + yaxis);
         //v.setText(route_hash.get("16").trips.get(1).get("2961849-20152D-vs20152D-Saturday-07").time[0]);
     }
 
@@ -508,7 +503,7 @@ public class MapsActivity extends ActionBarActivity implements OnMapReadyCallbac
         DateTimeFormatter fmt = DateTimeFormat.forPattern("HH:mm:ss");
         DateTime currentTime = new DateTime();
         if(isDuringOrAfter(currentTime,timed)){
-            System.out.println("Next Time: " + fmt.print(timed));
+            //System.out.println("Next Time: " + fmt.print(timed));
             return true;
         }
         return false;
@@ -560,4 +555,9 @@ public class MapsActivity extends ActionBarActivity implements OnMapReadyCallbac
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        System.gc();
+    }
 }

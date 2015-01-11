@@ -60,7 +60,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
         MapFragment mapFragment = (MapFragment) getFragmentManager()
                 .findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
+       mapFragment.getMapAsync(this);
 
         map0 = mapFragment.getMap();
         map0.setMyLocationEnabled(true);
@@ -146,7 +146,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap map) {
         mGoogleApiClient.connect();
-        //userLoc = createMarker(map);
+        userLoc = createMarker(map);
 
     }
 
@@ -155,8 +155,8 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         userLocation = location;
         if (userLocation != null) {
             log.e("MyActivity", "LOCATION CHANGED");
-            log.e("MyActivity", Double.toString(userLocation.getLatitude()));
-            log.e("MyActivity", Double.toString(userLocation.getLongitude()));
+            //log.e("MyActivity", Double.toString(userLocation.getLatitude()));
+           // log.e("MyActivity", Double.toString(userLocation.getLongitude()));
             changeLocation(userLocation);
         }
     }
