@@ -1,9 +1,11 @@
 package com.aaron.mapsapp;
 
+import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
+import android.view.View;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -119,7 +121,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
     public Marker createMarker (GoogleMap map) {
         Marker marker = map.addMarker(new MarkerOptions()
-                .position(new LatLng(0,0))
+                .position(new LatLng(0, 0))
                 .visible(false));
         return marker;
     }
@@ -133,7 +135,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         double latitude = userLocation.getLatitude();
         double longitude = userLocation.getLongitude();
         updateMarker(userLoc, latitude, longitude);
-        moveCamera(map0,latitude,longitude,19);
+        moveCamera(map0, latitude, longitude, 19);
     }
 
     @Override
@@ -152,5 +154,19 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
             log.e("MyActivity", Double.toString(userLocation.getLongitude()));
             changeLocation(userLocation);
         }
+    }
+
+    public void sixteen(View v){
+        String sixteen = "16";
+        /*Intent intent = new Intent(getApplicationContext(), MapsActivity.class);
+        intent.putExtra("ROUTE",sixteen);
+        startActivity(intent);*/
+    }
+
+    public void ten(View v) {
+        String ten = "10";
+        /*Intent intent = new Intent(getApplicationContext(), MapsActivity.class);
+        intent.putExtra("ROUTE",ten);
+        startActivity(intent);*/
     }
 }
