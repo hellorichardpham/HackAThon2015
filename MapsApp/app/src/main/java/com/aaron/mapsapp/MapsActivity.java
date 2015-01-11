@@ -32,11 +32,13 @@ public class MapsActivity extends ActionBarActivity implements OnMapReadyCallbac
     Location userLocation;
     LocationRequest mLocationRequest;
     Log log;
+    double initLat;
+    double initLng;
 
     //Creates location request with an interval of Halfsecond using GPS
     protected void createLocationRequest() {
         mLocationRequest = new LocationRequest();
-        mLocationRequest.setInterval(500);
+        mLocationRequest.setInterval(400);
         mLocationRequest.setFastestInterval(10);
         mLocationRequest.setSmallestDisplacement(5);
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
@@ -54,11 +56,24 @@ public class MapsActivity extends ActionBarActivity implements OnMapReadyCallbac
                 mGoogleApiClient, this);
     }
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+        //Import data from previous activity
+        Bundle extras = getIntent().getExtras();
+
+        //Find out what route the user wants
+        int routeNum = extras.getInt("ROUTE");
+        if (routeNum == 10) {
+            setTitle("Route 10");
+        }else if (routeNum == 16) {
+            setTitle("Route 16");
+        }
+
+        //Get the current location from previous activity
+        initLat = extras.getDouble("Lat");
+        initLng = extras.getDouble("Lng");
 
 
         MapFragment mapFragment = (MapFragment) getFragmentManager()
@@ -66,6 +81,7 @@ public class MapsActivity extends ActionBarActivity implements OnMapReadyCallbac
         mapFragment.getMapAsync(this);
 
         map0 = mapFragment.getMap();
+        map0.setMyLocationEnabled(true);
 
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addApi(LocationServices.API)
@@ -145,6 +161,10 @@ public class MapsActivity extends ActionBarActivity implements OnMapReadyCallbac
     public void onMapReady(GoogleMap map) {
         mGoogleApiClient.connect();
         userLoc = createMarker(map);
+        Location initLoc = new Location("");
+        initLoc.setLatitude(initLat);
+        initLoc.setLongitude(initLng);
+        changeLocation(initLoc);
 
     }
 

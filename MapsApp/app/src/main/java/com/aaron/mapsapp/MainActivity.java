@@ -34,7 +34,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     //Creates location request with an interval of Halfsecond using GPS
     protected void createLocationRequest() {
         mLocationRequest = new LocationRequest();
-        mLocationRequest.setInterval(500);
+        mLocationRequest.setInterval(400);
         mLocationRequest.setFastestInterval(10);
         mLocationRequest.setSmallestDisplacement(5);
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
@@ -63,6 +63,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         mapFragment.getMapAsync(this);
 
         map0 = mapFragment.getMap();
+        map0.setMyLocationEnabled(true);
 
          mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addApi(LocationServices.API)
@@ -116,7 +117,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 .target(new LatLng(latitude, longitude))      // Sets the center of the map to Mountain View
                 .zoom(zoomLevel)                   // Sets the zoom
                 .build();                   // Creates a CameraPosition from the builder
-        map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+        map.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
     }
 
     public Marker createMarker (GoogleMap map) {
@@ -134,14 +135,14 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     public void changeLocation (Location userLocation) {
         double latitude = userLocation.getLatitude();
         double longitude = userLocation.getLongitude();
-        updateMarker(userLoc, latitude, longitude);
+        //updateMarker(userLoc, latitude, longitude);
         moveCamera(map0, latitude, longitude, 19);
     }
 
     @Override
     public void onMapReady(GoogleMap map) {
         mGoogleApiClient.connect();
-        userLoc = createMarker(map);
+        //userLoc = createMarker(map);
 
     }
 
@@ -157,18 +158,18 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     public void sixteen(View v){
-        String sixteen = "16";
         Intent intent = new Intent(getApplicationContext(), MapsActivity.class);
-        intent.putExtra("ROUTE",sixteen);
+        intent.putExtra("ROUTE",16);
         intent.putExtra("Lat",userLocation.getLatitude());
         intent.putExtra("Lng",userLocation.getLongitude());
         startActivity(intent);
     }
 
     public void ten(View v) {
-        String ten = "10";
         Intent intent = new Intent(getApplicationContext(), MapsActivity.class);
-        intent.putExtra("ROUTE",ten);
+        intent.putExtra("ROUTE",10);
+        intent.putExtra("Lat",userLocation.getLatitude());
+        intent.putExtra("Lng",userLocation.getLongitude());
         startActivity(intent);
     }
 }
