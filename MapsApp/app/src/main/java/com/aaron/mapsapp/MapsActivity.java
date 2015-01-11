@@ -417,7 +417,7 @@ public class MapsActivity extends ActionBarActivity implements OnMapReadyCallbac
         //0 Weekday trips.get(0).values()
         //1 Saturday
         //2 Sunday
-        Collection<trip> col = route_hash.get(Integer.toString(routeNum)).trips.get(0).values();
+        Collection<trip> col = route_hash.get(Integer.toString(routeNum)).trips.get(getTimeOfDay()).values();
         Iterator<trip> tri = col.iterator();
 
         DateTime tempDateTime = null;
@@ -478,6 +478,30 @@ public class MapsActivity extends ActionBarActivity implements OnMapReadyCallbac
         //v.setText(route_hash.get("16").trips.get(1).get("2961849-20152D-vs20152D-Saturday-07").time[0]);
     }
 
+
+    public static int getTimeOfDay() {
+
+        DateTime today = new DateTime();
+        String day = today.dayOfWeek().getAsText().toLowerCase();
+
+        switch(day) {
+            case "sunday":
+                return 2;
+            case "saturday":
+                return 1;
+            case "monday":
+                return 0;
+            case "tuesday":
+                return 0;
+            case "wednesday":
+                return 0;
+            case "thursday":
+                return 0;
+            case "friday":
+                return 0;
+        }
+        return 0;
+    }
     /*we are checking(return t/f) if our current time is the same or after for every bus stop entry/time
     when it departs from the metro station*/
     public static Boolean findNextBusTime(DateTime timed){

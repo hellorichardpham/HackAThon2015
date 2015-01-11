@@ -11,19 +11,31 @@ import org.joda.time.format.DateTimeFormatter;
 public class DateTest {
 
 	public static void main(String[] args) {
-		Scanner scan = new Scanner(System.in);
-		ArrayList<String> timeInputs = new ArrayList<String>();
-		ArrayList<DateTime> dateTimeInputs = new ArrayList<DateTime>(); 
+		System.out.println(getTimeOfDay());
+	}
+	
+	public static int getTimeOfDay() {
 		
-		//Get user input for test times as Strings
-		for(int i =0; i < 4; i++) {
-			timeInputs.add(scan.next());
+		DateTime today = new DateTime();
+		String day = today.dayOfWeek().getAsText().toLowerCase();
+		
+		switch(day) {
+		case "sunday":
+			return 2;
+		case "saturday":
+			return 1;
+		case "monday":
+			return 0;
+		case "tuesday":
+			return 0;
+		case "wednesday":
+			return 0;
+		case "thursday":
+			return 0;
+		case "friday":
+			return 0;
 		}
-		
-		//Turn strings into DateTime Objects.
-		dateTimeInputs = generateTime(timeInputs);
-		
-		System.out.println(findNextBusTime(dateTimeInputs) + " wow");
+		return 0;
 	}
 
 	// Change this to return a date
