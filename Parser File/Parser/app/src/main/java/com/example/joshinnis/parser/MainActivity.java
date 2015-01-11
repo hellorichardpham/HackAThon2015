@@ -8,14 +8,24 @@ import android.view.MenuItem;
 import android.widget.TextView;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import android.util.Log;
+
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeComparator;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
+
 import java.util.StringTokenizer;
 
 
 public class MainActivity extends ActionBarActivity {
     //Resources r = getResources();
+    Log log;
     static String convertStreamToString(java.io.InputStream is) {
         @SuppressWarnings("resource")
         java.util.Scanner s = new java.util.Scanner(is).useDelimiter("\\A");
@@ -55,7 +65,7 @@ public class MainActivity extends ActionBarActivity {
 
         //0 = Weekday, 1 = Saturday, 2 = Sunday
         //Needed for inserting data in the structure, don't use
-        //boolean[] day = new boolean[3];
+        boolean[] day = new boolean[3];
 
         /*This is where the trip class gets stored, the arrayList is used to store each type of route
         0 = Weekday, 1 = Saturday, 2 = Sunday. The data is stored in the hash table using the trip_id
@@ -67,11 +77,10 @@ public class MainActivity extends ActionBarActivity {
             for(int i = 0; i < 3; i++) {
                 Map<String, trip> t = new HashMap<String, trip>();
                 trips.add(i,t);
-               // day[i] = false;
+                day[i] = false;
             }
         }
     }
-    
     Map<String,route> route_hash = new HashMap<String,route>();
 
 
@@ -82,7 +91,6 @@ public class MainActivity extends ActionBarActivity {
         int index;
         int day;
     }
-    
     Map<String,tmp_stop_time> stop_time_tmp_hash = new HashMap<String,tmp_stop_time>();
 
 
@@ -112,7 +120,7 @@ public class MainActivity extends ActionBarActivity {
             newStop.lat = Float.parseFloat(line[4]);
             newStop.lon = Float.parseFloat(line[5]);
             newStop.name = line[1];
-            bus_stop_hash.put(line[0],newStop);//lin[] refers to stop ID   
+            bus_stop_hash.put(line[0],newStop);
         }
 
         /*Gets the data needed from stop_times and stores it in a temporary hashtable to be used
@@ -200,7 +208,7 @@ public class MainActivity extends ActionBarActivity {
                 /*If the route is setup but not for that particular day it goes here, probably not
                 * needed, but it felt like it was at 5am*/
                 /*Fill in the specifics for this metro bus trip*/
-                 trip newtrip = new trip();
+                trip newtrip = new trip();
                 newtrip.time = new String[stop_time_tmp_hash.get(line[2]).index];
                 /*Transfers the time from the temporary data structure to the permanent data
                  structure*/
@@ -226,23 +234,94 @@ public class MainActivity extends ActionBarActivity {
                 route_hash.get(route_num[0]).trips.get(stop_time_tmp_hash.get(line[2]).day).put(line[2],newtrip);
             }
         }
-		
+
         //0 Weekday trips.get(0).values()
         //1 Saturday
         //2 Sunday
-		Collection<trip> col = route_hash.get("10").trips.get(1).values();
+        Collection<trip> col = route_hash.get("16").trips.get(1).values();
         Iterator<trip> tri = col.iterator();
-        while(tri.hasNext()) {
-            printtrip = tri.next();
-            for (int i = 0; i < printtrip.time.length; ++i)
-                log.v("MainActivity", i + ": " + printtrip.time[i]);
+
+//        ArrayList<String> timeInputs = new ArrayList<String>();
+//        ArrayList<DateTime> dateTimeInputs = new ArrayList<DateTime>();
+
+        DateTime tempDateTime=null;
+        int busindex;
+        Boolean isFound=false;
+        while(tri.hasNext()&&!isFound) {
+            trip printtrip = tri.next();
+            for (int i = 0; i < printtrip.time.length; ++i) {
+                tempDateTime = DateTime.parse(printtrip.time[i], DateTimeFormat.forPattern("HH:mm:ss"));
+                if (findNextBusTime(tempDateTime)) {
+                    log.v("MainActivity", i+"***");
+                    busindex=i;
+                    isFound = true;
+                    break;
+                }
+            }
+            if(isFound) {
+                break;
+            }
         }
 
+        //System.out.println("Beginning Generate Time");
+
+        //dateTimeInputs = generateTime(timeInputs);
+        //System.out.println("Begin Find Next Bus Time");
+
+        //log.v("MainActivity",findNextBusTime(dateTimeInputs));
 
 
-        v.setText(route_hash.get("16").trips.get(1).get("2961849-20152D-vs20152D-Saturday-07").time[0]);
+
+        //v.setText(route_hash.get("16").trips.get(1).get("2961849-20152D-vs20152D-Saturday-07").time[0]);
     }
 
+//    public static ArrayList<DateTime> generateTime(ArrayList<String> timeInputs) {
+//        ArrayList<DateTime> dateTimeInputs = new ArrayList<DateTime>();
+//        DateTime fakeTime;
+//        for(int i =0; i < timeInputs.size(); i++) {
+//            dateTimeInputs.add(fakeTime = DateTime.parse(timeInputs.get(i),
+//                    DateTimeFormat.forPattern("HH:mm:ss")));
+//        }
+//        return dateTimeInputs;
+//    }
+
+    //Right now it's returning the next bus time. We want to actually return the index instead?
+    public static Boolean findNextBusTime(DateTime timed){
+        DateTimeFormatter fmt = DateTimeFormat.forPattern("HH:mm:ss");
+        DateTime currentTime = new DateTime();
+        if(isDuringOrAfter(currentTime,timed)){
+            return true;
+        }
+        return false;
+    }
+
+    public static boolean isDuringOrAfter(DateTime currentTime,
+                                          DateTime targetTime) {
+
+        DateTimeFormatter fmt = DateTimeFormat.forPattern("HH:mm:ss");
+
+        //System.out.println("curr: " + fmt.print(currentTime));
+        //System.out.println("target: " + fmt.print(targetTime));
+
+        int result = DateTimeComparator.getTimeOnlyInstance().compare(
+                targetTime,currentTime);
+
+        switch (result) {
+            case 0:
+                System.out.println("Current time is equal to target time. " + fmt.print(targetTime));
+                return true;
+            case 1:
+                System.out.println("Current time is after or equal to target time. " + fmt.print(targetTime));
+                return true;
+            case -1:
+                //System.out.println("returning false for " + fmt.print(targetTime));
+                return false;
+            default:
+                System.out.println("wow");
+                return false;
+        }
+
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
