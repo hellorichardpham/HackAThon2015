@@ -106,6 +106,7 @@ public class MapsActivity extends ActionBarActivity implements OnMapReadyCallbac
 
         createLocationRequest();
         startParser();
+
     }
 
     @Override
@@ -161,10 +162,11 @@ public class MapsActivity extends ActionBarActivity implements OnMapReadyCallbac
         return marker;
     }
 
-    public void createStopMarker (GoogleMap map, double lat, double lng) {
+    public void createStopMarker (GoogleMap map, double lat, double lng, String name) {
             map.addMarker(new MarkerOptions()
             .position(new LatLng(lat,lng))
-            .title("STop"));
+            .title(name));
+        log.e("Main Activity",name);
     }
 
     public void updateMarker (Marker marker, double latitude, double longitude) {
@@ -175,18 +177,18 @@ public class MapsActivity extends ActionBarActivity implements OnMapReadyCallbac
     public void changeLocation (Location userLocation) {
         double latitude = userLocation.getLatitude();
         double longitude = userLocation.getLongitude();
-        updateMarker(userLoc, latitude, longitude);
+        //updateMarker(userLoc, latitude, longitude);
         moveCamera(map0, latitude, longitude, 19);
     }
 
     @Override
     public void onMapReady(GoogleMap map) {
         mGoogleApiClient.connect();
-        userLoc = createMarker(map);
-        Location initLoc = new Location("");
-        initLoc.setLatitude(initLat);
-        initLoc.setLongitude(initLng);
-        changeLocation(initLoc);
+        //userLoc = createMarker(map);
+        //Location initLoc = new Location("");
+        //initLoc.setLatitude(initLat);
+        //initLoc.setLongitude(initLng);
+        //changeLocation(initLoc);
 
     }
 
@@ -284,7 +286,8 @@ public class MapsActivity extends ActionBarActivity implements OnMapReadyCallbac
             stop newStop = new stop();
             newStop.lat = Float.parseFloat(line[4]);
             newStop.lon = Float.parseFloat(line[5]);
-            newStop.name = line[1];
+            newStop.name = line[2];
+            //log.e("Bus Stop Name", s[i]);
             bus_stop_hash.put(line[0], newStop);
         }
 
@@ -445,7 +448,7 @@ public class MapsActivity extends ActionBarActivity implements OnMapReadyCallbac
             //Aaron's code goes here.
             System.out.println("Bus Stop ID: " + busStopLoc);
             System.out.println("x: " + xaxis + " y: " + yaxis);
-            createStopMarker(map0, xaxis, yaxis);
+            createStopMarker(map0, xaxis, yaxis,bus_stop_hash.get(busStopLoc).name);
         }
 
         //Generates The XY coordinates for the next closest bus stop
