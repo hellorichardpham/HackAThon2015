@@ -245,7 +245,7 @@ public class MainActivity extends ActionBarActivity {
 //        ArrayList<DateTime> dateTimeInputs = new ArrayList<DateTime>();
 
         DateTime tempDateTime=null;
-        int busindex;
+        int busindex = -1;
         Boolean isFound=false;
         while(tri.hasNext()&&!isFound) {
             trip printtrip = tri.next();
@@ -262,6 +262,14 @@ public class MainActivity extends ActionBarActivity {
                 break;
             }
         }
+
+        String busStopID = route_hash.get("16").stop_ids[busindex];
+        String busStopName	= bus_stop_hash.get(busStopID).name;
+        //String busTripName = route_hash.get("16").trips.get()
+        float yaxis = bus_stop_hash.get(busStopID).lon;
+        float xaxis = bus_stop_hash.get(busStopID).lat;
+        System.out.println("Bus Stop ID: " + busStopID);
+        System.out.println("x: " + xaxis + " y: " + yaxis);
 
         //System.out.println("Beginning Generate Time");
 
