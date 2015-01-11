@@ -1,39 +1,60 @@
 package com.aaron.mapsapp;
 
-import java.lang.String;
+import android.location.Location;
+import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
+import android.util.Log;
 
 import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesClient;
-import com.google.android.gms.common.api.Api;
-import android.os.Bundle;
-import android.location.*;
-import android.support.v4.app.FragmentActivity;
-
-import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.maps.*;
-import com.google.android.gms.maps.model.*;
-
 import com.google.android.gms.common.api.GoogleApiClient;
-import android.util.Log;
-//import org.apache.commons.logging.Log;
-
+import com.google.android.gms.location.*;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Marker;
 
 public class MainActivity extends FragmentActivity implements OnMapReadyCallback,
-        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener
-{
-
+        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,
+        LocationListener {
+    Marker userLoc;
     GoogleApiClient mGoogleApiClient;
     GoogleMap map0;
     Location userLocation;
-    double mLatitudeText;
-    double mLongitudeText;
-
+    LocationRequest mLocationRequest;
     Log log;
+
+    //Creates location request with an interval of Halfsecond using GPS
+    protected void createLocationRequest() {
+        mLocationRequest = new LocationRequest();
+        mLocationRequest.setInterval(500);
+        mLocationRequest.setFastestInterval(10);
+        mLocationRequest.setSmallestDisplacement(5);
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+    }
+
+    //Starts the location updater
+    protected void startLocationUpdates() {
+        LocationServices.FusedLocationApi.requestLocationUpdates(
+                mGoogleApiClient, mLocationRequest, this);
+    }
+
+    //Stops the location updater
+    protected void stopLocationUpdates() {
+        LocationServices.FusedLocationApi.removeLocationUpdates(
+                mGoogleApiClient, this);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
 
         MapFragment mapFragment = (MapFragment) getFragmentManager()
                 .findFragmentById(R.id.map);
@@ -47,25 +68,29 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 .addOnConnectionFailedListener(this)
                 .build();
 
-        //mGoogleApiClient.connect();
-
+        createLocationRequest();
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        stopLocationUpdates();      //Stop updating the location
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (mGoogleApiClient.isConnected()) {    //if api still connected start updating location
+            startLocationUpdates();
+        } else {
+            mGoogleApiClient.connect();         //else reconnect client
+        }
+    }
 
     @Override
     public void onConnected(Bundle connectionHint) {
         // Connected to Google Play services!
-        userLocation = LocationServices.FusedLocationApi.getLastLocation(
-                mGoogleApiClient);
-        if (userLocation != null) {
-            log.e("MyActivity","Here");
-            mLatitudeText = userLocation.getLatitude();
-            mLongitudeText = userLocation.getLongitude();
-            changeLocation(userLocation);
-        }
-        log.e("MyActivity",Double.toString(mLatitudeText));
-        log.e("MyActivity",Double.toString(userLocation.getLatitude()));
-
+        startLocationUpdates();                 //Start updating location
     }
 
     @Override
@@ -84,12 +109,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
-    public void placeMarker(GoogleMap map, double latitude, double longitude) {
-      map.addMarker(new MarkerOptions()
-            .position(new LatLng(latitude, longitude))
-            .title("Current Location"));
-    }
-
     public void moveCamera(GoogleMap map, double latitude, double longitude, int zoomLevel) {
         CameraPosition cameraPosition = new CameraPosition.Builder()
                 .target(new LatLng(latitude, longitude))      // Sets the center of the map to Mountain View
@@ -98,16 +117,40 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
     }
 
+    public Marker createMarker (GoogleMap map) {
+        Marker marker = map.addMarker(new MarkerOptions()
+                .position(new LatLng(0,0))
+                .visible(false));
+        return marker;
+    }
+
+    public void updateMarker (Marker marker, double latitude, double longitude) {
+        marker.setPosition(new LatLng(latitude, longitude));
+        marker.setVisible(true);
+    }
+
     public void changeLocation (Location userLocation) {
         double latitude = userLocation.getLatitude();
         double longitude = userLocation.getLongitude();
-        placeMarker(map0,latitude,longitude);
-        moveCamera(map0,latitude,longitude,17);
-
+        updateMarker(userLoc, latitude, longitude);
+        moveCamera(map0,latitude,longitude,19);
     }
+
     @Override
     public void onMapReady(GoogleMap map) {
         mGoogleApiClient.connect();
-        log.e("MyActivity",Double.toString(mLatitudeText));
+        userLoc = createMarker(map);
+
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        userLocation = location;
+        if (userLocation != null) {
+            log.e("MyActivity", "LOCATION CHANGED");
+            log.e("MyActivity", Double.toString(userLocation.getLatitude()));
+            log.e("MyActivity", Double.toString(userLocation.getLongitude()));
+            changeLocation(userLocation);
+        }
     }
 }
