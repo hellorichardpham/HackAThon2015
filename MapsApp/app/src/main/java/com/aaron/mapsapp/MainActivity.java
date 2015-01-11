@@ -17,23 +17,24 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
-
+import com.google.android.gms.maps.model.Marker;
 
 public class MainActivity extends FragmentActivity implements OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,
         LocationListener {
-
+    Marker userLoc;
     GoogleApiClient mGoogleApiClient;
     GoogleMap map0;
     Location userLocation;
     LocationRequest mLocationRequest;
     Log log;
 
-    //Creates location request with an interval of 10seconds using GPS
+    //Creates location request with an interval of Halfsecond using GPS
     protected void createLocationRequest() {
         mLocationRequest = new LocationRequest();
-        mLocationRequest.setInterval(10000);
-        mLocationRequest.setFastestInterval(5000);
+        mLocationRequest.setInterval(500);
+        mLocationRequest.setFastestInterval(10);
+        mLocationRequest.setSmallestDisplacement(5);
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
     }
 
@@ -53,6 +54,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
 
         MapFragment mapFragment = (MapFragment) getFragmentManager()
                 .findFragmentById(R.id.map);
@@ -107,12 +109,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
-    public void placeMarker(GoogleMap map, double latitude, double longitude) {
-      map.addMarker(new MarkerOptions()
-            .position(new LatLng(latitude, longitude))
-            .title("Current Location"));
-    }
-
     public void moveCamera(GoogleMap map, double latitude, double longitude, int zoomLevel) {
         CameraPosition cameraPosition = new CameraPosition.Builder()
                 .target(new LatLng(latitude, longitude))      // Sets the center of the map to Mountain View
@@ -121,16 +117,30 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
     }
 
+    public Marker createMarker (GoogleMap map) {
+        Marker marker = map.addMarker(new MarkerOptions()
+                .position(new LatLng(0,0))
+                .visible(false));
+        return marker;
+    }
+
+    public void updateMarker (Marker marker, double latitude, double longitude) {
+        marker.setPosition(new LatLng(latitude, longitude));
+        marker.setVisible(true);
+    }
+
     public void changeLocation (Location userLocation) {
         double latitude = userLocation.getLatitude();
         double longitude = userLocation.getLongitude();
-        placeMarker(map0,latitude,longitude);
+        updateMarker(userLoc, latitude, longitude);
         moveCamera(map0,latitude,longitude,19);
     }
 
     @Override
     public void onMapReady(GoogleMap map) {
         mGoogleApiClient.connect();
+        userLoc = createMarker(map);
+
     }
 
     @Override
@@ -139,6 +149,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         if (userLocation != null) {
             log.e("MyActivity", "LOCATION CHANGED");
             log.e("MyActivity", Double.toString(userLocation.getLatitude()));
+            log.e("MyActivity", Double.toString(userLocation.getLongitude()));
             changeLocation(userLocation);
         }
     }
