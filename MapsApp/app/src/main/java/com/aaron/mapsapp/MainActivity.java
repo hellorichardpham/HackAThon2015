@@ -139,6 +139,10 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         moveCamera(map0, latitude, longitude, 19);
     }
 
+    public void createRouteMarkers () {
+
+    }
+
     @Override
     public void onMapReady(GoogleMap map) {
         mGoogleApiClient.connect();
