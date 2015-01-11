@@ -18,6 +18,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -49,6 +50,7 @@ public class MapsActivity extends ActionBarActivity implements OnMapReadyCallbac
     Log log;
     double initLat;
     double initLng;
+    int routeNum;
 
     //Creates location request with an interval of Halfsecond using GPS
     protected void createLocationRequest() {
@@ -79,7 +81,7 @@ public class MapsActivity extends ActionBarActivity implements OnMapReadyCallbac
         Bundle extras = getIntent().getExtras();
 
         //Find out what route the user wants
-        int routeNum = extras.getInt("ROUTE");
+        routeNum = extras.getInt("ROUTE");
         if (routeNum == 10) {
             setTitle("Route 10");
         }else if (routeNum == 16) {
@@ -106,6 +108,7 @@ public class MapsActivity extends ActionBarActivity implements OnMapReadyCallbac
 
         createLocationRequest();
         startParser();
+        System.gc();
 
     }
 
@@ -164,8 +167,16 @@ public class MapsActivity extends ActionBarActivity implements OnMapReadyCallbac
 
     public void createStopMarker (GoogleMap map, double lat, double lng, String name) {
             map.addMarker(new MarkerOptions()
-            .position(new LatLng(lat,lng))
-            .title(name));
+                    .position(new LatLng(lat, lng))
+                    .title(name));
+        log.e("Main Activity",name);
+    }
+
+    public void createStopMarkerUnique (GoogleMap map, double lat, double lng, String name) {
+        map.addMarker(new MarkerOptions()
+                .position(new LatLng(lat, lng))
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN))
+                .title(name));
         log.e("Main Activity",name);
     }
 
@@ -178,7 +189,7 @@ public class MapsActivity extends ActionBarActivity implements OnMapReadyCallbac
         double latitude = userLocation.getLatitude();
         double longitude = userLocation.getLongitude();
         //updateMarker(userLoc, latitude, longitude);
-        moveCamera(map0, latitude, longitude, 19);
+        moveCamera(map0, latitude, longitude, 14);
     }
 
     @Override
@@ -406,7 +417,7 @@ public class MapsActivity extends ActionBarActivity implements OnMapReadyCallbac
         //0 Weekday trips.get(0).values()
         //1 Saturday
         //2 Sunday
-        Collection<trip> col = route_hash.get("16").trips.get(0).values();
+        Collection<trip> col = route_hash.get(Integer.toString(routeNum)).trips.get(0).values();
         Iterator<trip> tri = col.iterator();
 
         DateTime tempDateTime = null;
@@ -438,21 +449,24 @@ public class MapsActivity extends ActionBarActivity implements OnMapReadyCallbac
         }
 
 
-        //Generates XY coordinates of all bus routes for intial pins on GMaps
+        //Generates XY coordinates of all bus stops for intial pins on GMaps
         String busStopLoc;
         double yaxis,xaxis;
-        for (int i = 0; i < route_hash.get("16").stops; i++) {
-            busStopLoc= route_hash.get("16").stop_ids[i];
+        String uniqueBusStopID = route_hash.get(Integer.toString(routeNum)).stop_ids[busindex];
+        for (int i = 0; i < route_hash.get(Integer.toString(routeNum)).stops; i++) {
+            busStopLoc= route_hash.get(Integer.toString(routeNum)).stop_ids[i];
             yaxis = bus_stop_hash.get( busStopLoc).lon;
             xaxis = bus_stop_hash.get( busStopLoc).lat;
             //Aaron's code goes here.
             System.out.println("Bus Stop ID: " + busStopLoc);
             System.out.println("x: " + xaxis + " y: " + yaxis);
-            createStopMarker(map0, xaxis, yaxis,bus_stop_hash.get(busStopLoc).name);
+            if (busindex == i) {
+                createStopMarkerUnique(map0, xaxis, yaxis, bus_stop_hash.get(uniqueBusStopID).name + "\n Bus is near this stop");
+            } else createStopMarker(map0, xaxis, yaxis, bus_stop_hash.get(busStopLoc).name);
         }
 
         //Generates The XY coordinates for the next closest bus stop
-        String uniqueBusStopID = route_hash.get("16").stop_ids[busindex];
+         uniqueBusStopID = route_hash.get(Integer.toString(routeNum)).stop_ids[busindex];
         String busStopName	= bus_stop_hash.get(uniqueBusStopID).name;
         //String busTripName = route_hash.get("16").trips.get()
         yaxis = bus_stop_hash.get(uniqueBusStopID).lon;
