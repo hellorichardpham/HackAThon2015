@@ -1,15 +1,15 @@
 package com.aaron.mapsapp;
 
-import android.content.Intent;
 import android.location.Location;
+import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
 import android.util.Log;
-import android.view.View;
+import android.view.Menu;
+import android.view.MenuItem;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.*;
+import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -18,12 +18,14 @@ import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 
-public class MainActivity extends FragmentActivity implements OnMapReadyCallback,
+
+public class MapsActivity extends ActionBarActivity implements OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,
         LocationListener {
+
     Marker userLoc;
     GoogleApiClient mGoogleApiClient;
     GoogleMap map0;
@@ -52,10 +54,11 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 mGoogleApiClient, this);
     }
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_maps);
 
 
         MapFragment mapFragment = (MapFragment) getFragmentManager()
@@ -64,7 +67,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
         map0 = mapFragment.getMap();
 
-         mGoogleApiClient = new GoogleApiClient.Builder(this)
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addApi(LocationServices.API)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
@@ -156,19 +159,28 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-    public void sixteen(View v){
-        String sixteen = "16";
-        Intent intent = new Intent(getApplicationContext(), MapsActivity.class);
-        intent.putExtra("ROUTE",sixteen);
-        intent.putExtra("Lat",userLocation.getLatitude());
-        intent.putExtra("Lng",userLocation.getLongitude());
-        startActivity(intent);
+
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_maps, menu);
+        return true;
     }
 
-    public void ten(View v) {
-        String ten = "10";
-        Intent intent = new Intent(getApplicationContext(), MapsActivity.class);
-        intent.putExtra("ROUTE",ten);
-        startActivity(intent);
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_settings) {
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 }
